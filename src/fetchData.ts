@@ -52,7 +52,9 @@ export async function fetchMintTransfers(limit = 1000): Promise<MintTransfer[]> 
     const header = data.toString('hex').slice(0, sig.length);
     if (header !== sig) continue;
 
-    const accountKeys = message.accountKeys.map(k => k.toBase58());
+    const accountKeys = message.accountKeys.map(k => 
+      typeof k === 'string' ? k : k.pubkey.toBase58()
+    );
     const accountArguments = (ix as any).accounts.map((idx: number) => accountKeys[idx]);
 
     if (!ALLOWED_ACCOUNTS.has(accountArguments[4])) continue;
@@ -84,7 +86,9 @@ export async function fetchGraduations(mints: string[], limit = 1000): Promise<G
     );
     if (!ix || !('accounts' in ix)) continue;
 
-    const accountKeys = message.accountKeys.map(k => k.toBase58());
+    const accountKeys = message.accountKeys.map(k => 
+      typeof k === 'string' ? k : k.pubkey.toBase58()
+    );
     const accountArguments = (ix as any).accounts.map((idx: number) => accountKeys[idx]);
 
     if (accountArguments[2] && mints.includes(accountArguments[2])) {
